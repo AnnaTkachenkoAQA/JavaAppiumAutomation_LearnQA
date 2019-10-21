@@ -158,6 +158,43 @@ public class FirstTest {
         );
     }
 
+    @Test
+    public void testSearchAndCancel () {
+
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Cannot find 'Search Wikipedia' input",
+                5
+        );
+
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search…')]"),
+                "qa",
+                "Cannot find search input",
+                5
+        );
+
+        waitForElementPresent(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']"),
+                "Cannot find any topic searching by 'qa'",
+                5
+        );
+
+        waitForElementAndClick (
+                By.id("search_close_btn"),
+                "Cannot find close search button",
+                5
+        );
+
+        waitForElementNotPresent(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']"),
+                "Topics for searching by 'qa' are still displayed",
+                5
+        );
+
+
+    }
+
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
         wait.withMessage(error_message+"\n");
