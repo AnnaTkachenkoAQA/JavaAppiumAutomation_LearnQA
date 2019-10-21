@@ -114,7 +114,7 @@ public class FirstTest {
         );
 
         waitForElementAndClick(
-                By.xpath ("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
                 "Cannot find 'Object-oriented programming language' topic searching by 'Java''",
                 5
         );
@@ -127,14 +127,36 @@ public class FirstTest {
 
         String article_title = title_element.getAttribute("text");
 
-        Assert.assertEquals (
+        Assert.assertEquals(
                 "We see unexpected title",
                 "Java (programming language)",
                 article_title);
 
     }
 
+    @Test
+    public void testCheckTextAtSearchField(){
 
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Cannot find 'Search Wikipedia' input",
+                5
+        );
+
+        WebElement search_field = waitForElementPresent(
+                By.xpath("//*[contains(@text, 'Search…')]"),
+                "Cannot find search input",
+                5
+        );
+
+        String textAtSearchField = search_field.getAttribute("text");
+
+        Assert.assertEquals(
+                "Text at search field is unexpected",
+                "Search…",
+                textAtSearchField
+        );
+    }
 
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSeconds) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
