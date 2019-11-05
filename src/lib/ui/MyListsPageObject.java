@@ -59,4 +59,13 @@ public class MyListsPageObject extends MainPageObject {
         );
         this.waitForArticleToDisappearByTitle(article_title);
     }
+
+   public void openArticleByTitle (String article_title) {
+        String article_xpath= getSavedArticleXpathByTitle(article_title);
+       this.waitForElementAndClick(
+               By.xpath(article_xpath),
+               "Can not find and open article at list",
+               5
+       );
+   }
 }

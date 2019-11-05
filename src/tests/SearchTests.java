@@ -3,6 +3,9 @@ package tests;
 import lib.CoreTestCase;
 import lib.ui.SearchPageObject;
 import org.junit.Test;
+import org.openqa.selenium.WebElement;
+
+import java.util.List;
 
 public class SearchTests extends CoreTestCase {
     @Test
@@ -50,5 +53,53 @@ public class SearchTests extends CoreTestCase {
         SearchPageObject.typeSearchLine(search_line);
         SearchPageObject.waitForEmptyResultsLabel();
         SearchPageObject.assertThereIsNoResultsOfSearch();
+    }
+
+    @Test
+    public void testCheckTextAtSearchField(){
+
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
+
+        SearchPageObject.initSearchInput();
+        String textAtSearchField =  SearchPageObject.getTextFromEmptySearchField();
+
+        assertEquals(
+                "Text at search field is unexpected",
+                "Search…",
+                textAtSearchField
+        );
+    }
+
+    @Test
+    public void testSearchAndCancel () {
+
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
+
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("qa");
+        int amount_of_articles= SearchPageObject.getAmountOfFoundArticles();
+
+        assertTrue("Found <= 1 results of searching", amount_of_articles>1);
+
+        SearchPageObject.clickCancelSearch();
+
+        SearchPageObject.waitForSearchResultToDisappear();
+    }
+
+    @Test
+    public void testCheckSearchedWordAtResultsOfSearching () {
+
+        String searchedValue= "qa";
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
+
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine(searchedValue);
+
+        String[] topics = SearchPageObject.getAllTopicsAtSearchResults();
+
+        for (int i=0; i<topics.length-1; i++){
+            boolean isResultContainsSearchedWord =  topics[i].contains(searchedValue);
+            assertTrue("Topic is not contained searched word", isResultContainsSearchedWord);
+        }
     }
 }

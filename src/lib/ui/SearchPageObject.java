@@ -2,6 +2,9 @@ package lib.ui;
 
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
+import java.util.List;
 
 public class SearchPageObject extends MainPageObject {
 
@@ -11,7 +14,8 @@ public class SearchPageObject extends MainPageObject {
             SEARCH_CANCEL_BUTTON="search_close_btn",
             SEARCH_RESULT_BY_SUBSTRING_TPL ="//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='{SUBSTRING}']",
             SEARCH_RESULT_ELEMENT="//*[@resource-id='org.wikipedia:id/search_results_list']/*[@resource-id='org.wikipedia:id/page_list_item_container']",
-            SEARCH_EMPTY_RESULT_ELEMENT="//*[@text='No results found']";
+            SEARCH_EMPTY_RESULT_ELEMENT="//*[@text='No results found']",
+            SEARCH_RESULT_TITLE="//*[@resource-id='org.wikipedia:id/page_list_item_title']";
 
 
     public SearchPageObject (AppiumDriver driver) {
@@ -92,18 +96,48 @@ public class SearchPageObject extends MainPageObject {
                 "Can not find anything by the request",
                 15
         );
-
        return this.getAmountOfElements(By.xpath(SEARCH_RESULT_ELEMENT));
     }
 
     public void waitForEmptyResultsLabel (){
-
         this.waitForElementPresent(By.xpath(SEARCH_EMPTY_RESULT_ELEMENT), "Can not find empty result element", 15);
-
     }
 
     public void assertThereIsNoResultsOfSearch() {
         this.assertElementNotPresent(By.xpath(SEARCH_RESULT_ELEMENT), "We supposed not to find any results");
+    }
+
+    public String getTextFromEmptySearchField(){
+        return this.waitForElementAndGetAttribute(By.xpath(SEARCH_INPUT), "text","Can not find search input", 5);
+    }
+
+    public String[] getAllTopicsAtSearchResults(){
+        List<WebElement> topics = this.waitForElementsPresent(
+                By.xpath(SEARCH_RESULT_TITLE),
+                "Cannot find any topic searching by 'qa'",
+                15
+        );
+
+        String[] topics_title ;
+        topics_title =new String [topics.size()];
+
+        for (WebElement element: topics){
+            for(int i=0;i<topics.size();i++) {
+                String topic_name = element.getAttribute("text");
+                topic_name = topic_name.toLowerCase();
+                topics_title[i]=topic_name;
+            }
+        }
+        return topics_title;
+    }
+
+
+    public void waitForSearchResultToDisappear(){
+        this.waitForElementNotPresent(
+                By.xpath(SEARCH_RESULT_ELEMENT),
+                "Topics for searching are still displayed",
+                5
+        );
     }
 
 }

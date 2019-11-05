@@ -18,11 +18,18 @@ public class ArticlePageObject extends MainPageObject {
             OPTIONS_SHARE_LINK_BUTTON="//*[@text='Share link']",
             OPTIONS_FIND_IN_PAGE_BUTTON="//*[@text='Find in page']",
             OPTIONS_FONT_AND_THEME_BUTTON="//*[@text='Font and theme']",
-            CLOSE_ARTICLE_BUTTON="//android.widget.ImageButton[@content-desc='Navigate up']";
+            CLOSE_ARTICLE_BUTTON="//android.widget.ImageButton[@*='Navigate up']",
+            EXISTING_LIST_LINK_TPL="//*[@resource-id='org.wikipedia:id/item_title'][@text='{NAME_OF_LIST}']";
 
     public ArticlePageObject (AppiumDriver driver) {
         super(driver);
     }
+
+    /*TEMPLATES METHODS*/
+    private static String getListElement (String name_of_list) {
+        return EXISTING_LIST_LINK_TPL.replace("{NAME_OF_LIST}", name_of_list );
+    }
+    /*TEMPLATES METHODS*/
 
     public WebElement waitForTitleElement(){
         return this.waitForElementPresent(By.id(TITLE), "Cannot find title of article", 15 );
@@ -107,5 +114,35 @@ public class ArticlePageObject extends MainPageObject {
                 "Cannot close article, cannot find X link",
                 5
         );
+    }
+
+    public void addArticleToExistingList(String name_of_list) {
+        this.waitForElementAndClick(
+                By.xpath(OPTIONS_BUTTON),
+                "Cannot find button to open article options",
+                5
+        );
+
+        this.waitForOptionsMenuToRender();
+
+        this.waitForElementAndClick(
+                By.xpath(OPTIONS_ADD_TO_MY_LIST_BUTTON),
+                "Can not find option to adding article to reading list",
+                5
+        );
+
+        this.waitForElementAndClick(
+                By.xpath(getListElement(name_of_list)),
+                "Can not find created folder with name " +name_of_list,
+                5
+        );
+    }
+
+    public void assertThereIsTitleOfArticle(){
+        this.assertElementPresent(
+                By.id(TITLE),
+                "Cannot find article title"
+        );
+
     }
 }

@@ -130,8 +130,8 @@ public class MainPageObject {
     }
 
     public void assertElementPresent (By by, String error_message) {
-        int amount_of_elements =  getAmountOfElements(by);
-        if (amount_of_elements<0){
+        WebElement element = driver.findElement(by);
+        if (element.isDisplayed()==false){
             String default_message = "An element " + by.toString() + " supposed to be present";
             throw new AssertionError(default_message + " "+ error_message);
         }
