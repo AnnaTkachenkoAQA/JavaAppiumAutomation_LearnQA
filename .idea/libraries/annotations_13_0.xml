@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="annotations-13.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Downloads/qa-lithium/lib/annotations-13.0.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/qa-lithium/lib/qa-lithium-1.0.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

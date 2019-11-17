@@ -1,24 +1,25 @@
 package lib.ui;
 
 import io.appium.java_client.AppiumDriver;
+import lib.Platform;
 import org.openqa.selenium.WebElement;
 
-public class ArticlePageObject extends MainPageObject {
+abstract public class ArticlePageObject extends MainPageObject {
 
-    private static final String
-            TITLE ="id:org.wikipedia:id/view_page_title_text",
-            FOOTER_ELEMENT= "xpath://*[@text='View page in browser']",
-            OPTIONS_BUTTON="xpath://android.widget.ImageView[@content-desc='More options']",
-            OPTIONS_ADD_TO_MY_LIST_BUTTON="xpath://*[@text='Add to reading list']",
-            ADD_TO_MY_LIST_OVERLAY="id:org.wikipedia:id/onboarding_button",
-            MY_LIST_NAME_INPUT= "id:org.wikipedia:id/text_input",
-            MY_LIST_OK_BUTTON= "xpath://*[@text='OK']",
-            OPTIONS_CHANGE_LANGUAGE_BUTTON="xpath://*[@text='Change language']",
-            OPTIONS_SHARE_LINK_BUTTON="xpath://*[@text='Share link']",
-            OPTIONS_FIND_IN_PAGE_BUTTON="xpath://*[@text='Find in page']",
-            OPTIONS_FONT_AND_THEME_BUTTON="xpath://*[@text='Font and theme']",
-            CLOSE_ARTICLE_BUTTON="xpath://android.widget.ImageButton[@*='Navigate up']",
-            EXISTING_LIST_LINK_TPL="xpath://*[@resource-id='org.wikipedia:id/item_title'][@text='{NAME_OF_LIST}']";
+    protected static  String
+            TITLE ,
+            FOOTER_ELEMENT,
+            OPTIONS_BUTTON,
+            OPTIONS_ADD_TO_MY_LIST_BUTTON,
+            ADD_TO_MY_LIST_OVERLAY,
+            MY_LIST_NAME_INPUT,
+            MY_LIST_OK_BUTTON,
+            OPTIONS_CHANGE_LANGUAGE_BUTTON,
+            OPTIONS_SHARE_LINK_BUTTON,
+            OPTIONS_FIND_IN_PAGE_BUTTON,
+            OPTIONS_FONT_AND_THEME_BUTTON,
+            CLOSE_ARTICLE_BUTTON,
+            EXISTING_LIST_LINK_TPL;
 
     public ArticlePageObject (AppiumDriver driver) {
         super(driver);
@@ -35,11 +36,22 @@ public class ArticlePageObject extends MainPageObject {
     }
 
     public String getArticleTitle () {
-        return waitForTitleElement().getAttribute("text");
+        WebElement titleElement= waitForTitleElement();
+        if(Platform.getInstance().isAndroid()){
+            return titleElement.getAttribute("text");
+        }else {
+            return titleElement.getAttribute("name");
+        }
+
     }
 
-    public void swipeToFooter(){
-        this.swipeUpToFindElement(FOOTER_ELEMENT, "Can not find the end of article", 20);
+    public void swipeToFooter() {
+        if (Platform.getInstance().isAndroid()) {
+            this.swipeUpToFindElement(FOOTER_ELEMENT, "Can not find the end of article", 40);
+        }
+        else{
+            this.swipeUpTillElementAppear(FOOTER_ELEMENT,"Can not find the end of article", 40 );
+        }
     }
 
     public void addArticleToMyList (String name_of_folder){
@@ -143,5 +155,13 @@ public class ArticlePageObject extends MainPageObject {
                 "Cannot find article title"
         );
 
+    }
+
+    public void addArticlesToMySaved(){
+        this.waitForElementAndClick(
+                OPTIONS_ADD_TO_MY_LIST_BUTTON,
+                "Can not find and click 'Add to saved' button",
+                5
+        );
     }
 }
