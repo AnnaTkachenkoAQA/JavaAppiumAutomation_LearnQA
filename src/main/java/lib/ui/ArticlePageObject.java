@@ -19,7 +19,11 @@ abstract public class ArticlePageObject extends MainPageObject {
             OPTIONS_FIND_IN_PAGE_BUTTON,
             OPTIONS_FONT_AND_THEME_BUTTON,
             CLOSE_ARTICLE_BUTTON,
-            EXISTING_LIST_LINK_TPL;
+            EXISTING_LIST_LINK_TPL,
+            TITLE_FROM_CONTENTS_TPL,
+            OPTIONS_CONTENTS_BUTTON,
+            CLOSE_CONTENTS_BUTTON;
+
 
     public ArticlePageObject (AppiumDriver driver) {
         super(driver);
@@ -29,10 +33,18 @@ abstract public class ArticlePageObject extends MainPageObject {
     private static String getListElement (String name_of_list) {
         return EXISTING_LIST_LINK_TPL.replace("{NAME_OF_LIST}", name_of_list );
     }
+
+    private static String getArticleTitleFromContents (String article_title){
+        return TITLE_FROM_CONTENTS_TPL.replace("{TITLE}", article_title);
+    }
     /*TEMPLATES METHODS*/
 
     public WebElement waitForTitleElement(){
         return this.waitForElementPresent(TITLE, "Cannot find title of article", 15 );
+    }
+
+    public WebElement waitForTitleFromContents(String article_title){
+        return this.waitForElementPresent(getArticleTitleFromContents(article_title),"Can not find article title from contents: "+article_title, 15);
     }
 
     public String getArticleTitle () {
@@ -42,7 +54,15 @@ abstract public class ArticlePageObject extends MainPageObject {
         }else {
             return titleElement.getAttribute("name");
         }
+    }
 
+    public String getAttributeArticleTitleFromContents (String article_title) {
+        WebElement titleElement = waitForTitleFromContents(article_title);
+        if(Platform.getInstance().isAndroid()){
+            return titleElement.getAttribute("text");
+        } else {
+            return titleElement.getAttribute("name");
+        }
     }
 
     public void swipeToFooter() {
@@ -161,6 +181,22 @@ abstract public class ArticlePageObject extends MainPageObject {
         this.waitForElementAndClick(
                 OPTIONS_ADD_TO_MY_LIST_BUTTON,
                 "Can not find and click 'Add to saved' button",
+                5
+        );
+    }
+
+    public void clickContentsOption (){
+        this.waitForElementAndClick(
+                OPTIONS_CONTENTS_BUTTON,
+                "Can not find and click Contents button",
+                5
+        );
+    }
+
+    public void closeContents(){
+        this.waitForElementAndClick(
+                CLOSE_CONTENTS_BUTTON,
+                "Can not find and click CLose Contents button",
                 5
         );
     }
