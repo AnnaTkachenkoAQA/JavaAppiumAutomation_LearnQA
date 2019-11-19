@@ -14,7 +14,8 @@ abstract public class SearchPageObject extends MainPageObject {
             SEARCH_RESULT_BY_SUBSTRING_TPL,
             SEARCH_RESULT_ELEMENT,
             SEARCH_EMPTY_RESULT_ELEMENT,
-            SEARCH_RESULT_TITLE;
+            SEARCH_RESULT_TITLE,
+            SEARCH_CLEAR_TEXT;
 
 
     public SearchPageObject (AppiumDriver driver) {
@@ -59,6 +60,14 @@ abstract public class SearchPageObject extends MainPageObject {
         this.waitForElementAndClick(
                 SEARCH_CANCEL_BUTTON,
                 "Cannot find and click close search button",
+                5
+        );
+    }
+
+    public void clickClearSearchField(){
+        this.waitForElementAndClick(
+                SEARCH_CLEAR_TEXT,
+                "Cannot find and click clear search field button",
                 5
         );
     }
@@ -111,6 +120,10 @@ abstract public class SearchPageObject extends MainPageObject {
         return this.waitForElementAndGetAttribute(SEARCH_INPUT, "text","Can not find search input", 5);
     }
 
+    public String getTextFromEmptySearchFieldForIos(){
+        return this.waitForElementAndGetAttribute(SEARCH_INPUT, "name","Can not find search input", 5);
+    }
+
     public String[] getAllTopicsAtSearchResults(){
         List<WebElement> topics = this.waitForElementsPresent(
                 SEARCH_RESULT_TITLE,
@@ -124,6 +137,26 @@ abstract public class SearchPageObject extends MainPageObject {
         for (WebElement element: topics){
             for(int i=0;i<topics.size();i++) {
                 String topic_name = element.getAttribute("text");
+                topic_name = topic_name.toLowerCase();
+                topics_title[i]=topic_name;
+            }
+        }
+        return topics_title;
+    }
+
+    public String[] getAllTopicsAtSearchResultsForIos(){
+        List<WebElement> topics = this.waitForElementsPresent(
+                SEARCH_RESULT_TITLE,
+                "Cannot find any topic searching by 'qa'",
+                15
+        );
+
+        String[] topics_title ;
+        topics_title =new String [topics.size()];
+
+        for (WebElement element: topics){
+            for(int i=0;i<topics.size();i++) {
+                String topic_name = element.getAttribute("name");
                 topic_name = topic_name.toLowerCase();
                 topics_title[i]=topic_name;
             }

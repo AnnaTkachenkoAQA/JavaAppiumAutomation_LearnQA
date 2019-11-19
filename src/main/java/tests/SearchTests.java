@@ -1,6 +1,7 @@
 package tests;
 
 import lib.CoreTestCase;
+import lib.Platform;
 import lib.ui.SearchPageObject;
 import lib.ui.factories.SearchPageObjectFactory;
 import org.junit.Test;
@@ -59,13 +60,24 @@ public class SearchTests extends CoreTestCase {
         SearchPageObject SearchPageObject = SearchPageObjectFactory.get(driver);
 
         SearchPageObject.initSearchInput();
-        String textAtSearchField =  SearchPageObject.getTextFromEmptySearchField();
+        if(Platform.getInstance().isAndroid()) {
+            String textAtSearchField = SearchPageObject.getTextFromEmptySearchField();
 
-        assertEquals(
-                "Text at search field is unexpected",
-                "Search…",
-                textAtSearchField
-        );
+            assertEquals(
+                    "Text at search field is unexpected",
+                    "Search…",
+                    textAtSearchField
+            );
+        }
+        else{
+            String textAtSearchField = SearchPageObject.getTextFromEmptySearchFieldForIos();
+
+            assertEquals(
+                    "Text at search field is unexpected",
+                    "Search Wikipedia",
+                    textAtSearchField
+            );
+        }
     }
 
     @Test
@@ -79,7 +91,12 @@ public class SearchTests extends CoreTestCase {
 
         assertTrue("Found <= 1 results of searching", amount_of_articles>1);
 
-        SearchPageObject.clickCancelSearch();
+        if(Platform.getInstance().isAndroid()) {
+            SearchPageObject.clickCancelSearch();
+        }
+        else{
+            SearchPageObject.clickClearSearchField();
+        }
 
         SearchPageObject.waitForSearchResultToDisappear();
     }
@@ -93,7 +110,14 @@ public class SearchTests extends CoreTestCase {
         SearchPageObject.initSearchInput();
         SearchPageObject.typeSearchLine(searchedValue);
 
-        String[] topics = SearchPageObject.getAllTopicsAtSearchResults();
+        String[] topics;
+
+        if(Platform.getInstance().isAndroid()) {
+            topics = SearchPageObject.getAllTopicsAtSearchResults();
+        }
+        else {
+            topics = SearchPageObject.getAllTopicsAtSearchResultsForIos();
+        }
 
         for (int i=0; i<topics.length-1; i++){
             boolean isResultContainsSearchedWord =  topics[i].contains(searchedValue);

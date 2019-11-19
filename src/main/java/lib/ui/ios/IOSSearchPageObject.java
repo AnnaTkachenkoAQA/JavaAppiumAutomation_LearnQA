@@ -11,8 +11,9 @@ public class IOSSearchPageObject extends SearchPageObject {
         SEARCH_CANCEL_BUTTON = "id:Cancel";
         SEARCH_RESULT_BY_SUBSTRING_TPL = "xpath://XCUIElementTypeLink[contains(@name, '{SUBSTRING}')]";
         SEARCH_RESULT_ELEMENT = "xpath://XCUIElementTypeLink";
-        SEARCH_EMPTY_RESULT_ELEMENT = "xpath://*[@text='No results found']";
-        SEARCH_RESULT_TITLE = "xpath://XCUIElementTypeStaticText[@name='No results found']";
+        SEARCH_EMPTY_RESULT_ELEMENT = "id:No results found";
+        SEARCH_RESULT_TITLE = "xpath://XCUIElementTypeLink";
+        SEARCH_CLEAR_TEXT="id:Clear text";
     }
 
 
