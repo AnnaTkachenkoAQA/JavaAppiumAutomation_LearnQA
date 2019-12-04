@@ -1,7 +1,7 @@
 package lib.ui;
 
-import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.List;
 
@@ -15,16 +15,20 @@ abstract public class SearchPageObject extends MainPageObject {
             SEARCH_RESULT_ELEMENT,
             SEARCH_EMPTY_RESULT_ELEMENT,
             SEARCH_RESULT_TITLE,
-            SEARCH_CLEAR_TEXT;
+            SEARCH_CLEAR_TEXT,
+            SEARCH_RESULT_TITLE_TPL;
 
 
-    public SearchPageObject (AppiumDriver driver) {
+    public SearchPageObject (RemoteWebDriver driver) {
         super(driver);
     }
 
     /*TEMPLATES METHODS*/
     private static String getResultSearchElement (String substring) {
         return SEARCH_RESULT_BY_SUBSTRING_TPL.replace("{SUBSTRING}",substring );
+    }
+    private static String getResultSearchElementFromTitle (String title) {
+        return SEARCH_RESULT_TITLE_TPL.replace("{TITLE}",title );
     }
     /*TEMPLATES METHODS*/
 
@@ -99,6 +103,15 @@ abstract public class SearchPageObject extends MainPageObject {
         );
     }
 
+    public void clickByArticleWithTitle(String title){
+        String search_result_xpath= getResultSearchElementFromTitle(title);
+        this.waitForElementAndClick(
+                search_result_xpath,
+                "Cannot find and click search results with substring "+title,
+                10
+        );
+    }
+
     public int getAmountOfFoundArticles (){
        this.waitForElementPresent(
                 SEARCH_RESULT_ELEMENT,
@@ -122,6 +135,10 @@ abstract public class SearchPageObject extends MainPageObject {
 
     public String getTextFromEmptySearchFieldForIos(){
         return this.waitForElementAndGetAttribute(SEARCH_INPUT, "name","Can not find search input", 5);
+    }
+
+    public String getTextFromEmptySearchFieldForMW(){
+        return this.waitForElementAndGetAttribute(SEARCH_INPUT, "placeholder","Can not find search input", 5);
     }
 
     public String[] getAllTopicsAtSearchResults(){

@@ -1,8 +1,8 @@
 package lib.ui;
 
-import io.appium.java_client.AppiumDriver;
 import lib.Platform;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 abstract public class ArticlePageObject extends MainPageObject {
 
@@ -22,10 +22,12 @@ abstract public class ArticlePageObject extends MainPageObject {
             EXISTING_LIST_LINK_TPL,
             TITLE_FROM_CONTENTS_TPL,
             OPTIONS_CONTENTS_BUTTON,
-            CLOSE_CONTENTS_BUTTON;
+            CLOSE_CONTENTS_BUTTON,
+            OPTIONS_REMOVE_FROM_MYLISTS_BUTTON,
+            FIRST_WORD_AT_TITLE;
 
 
-    public ArticlePageObject (AppiumDriver driver) {
+    public ArticlePageObject (RemoteWebDriver driver) {
         super(driver);
     }
 
@@ -51,8 +53,10 @@ abstract public class ArticlePageObject extends MainPageObject {
         WebElement titleElement= waitForTitleElement();
         if(Platform.getInstance().isAndroid()){
             return titleElement.getAttribute("text");
-        }else {
+        }else if (Platform.getInstance().isIOS()){
             return titleElement.getAttribute("name");
+        } else{
+            return titleElement.getText();
         }
     }
 
@@ -69,8 +73,11 @@ abstract public class ArticlePageObject extends MainPageObject {
         if (Platform.getInstance().isAndroid()) {
             this.swipeUpToFindElement(FOOTER_ELEMENT, "Can not find the end of article", 40);
         }
-        else{
+        else if (Platform.getInstance().isIOS()){
             this.swipeUpTillElementAppear(FOOTER_ELEMENT,"Can not find the end of article", 40 );
+        }
+        else {
+            this.scrollWebPageTillElementNotVisible(FOOTER_ELEMENT, "Can not find the end of article", 40);
         }
     }
 
@@ -140,11 +147,16 @@ abstract public class ArticlePageObject extends MainPageObject {
     }
 
     public void closeArticle(){
-        this.waitForElementAndClick(
-                CLOSE_ARTICLE_BUTTON,
-                "Cannot close article, cannot find X link",
-                5
-        );
+        if((Platform.getInstance().isAndroid())||(Platform.getInstance().isIOS())) {
+            this.waitForElementAndClick(
+                    CLOSE_ARTICLE_BUTTON,
+                    "Cannot close article, cannot find X link",
+                    5
+            );
+        }
+        else {
+            System.out.println("Method closeArticle() does nothing for platfrom "+ Platform.getInstance().getPlatformVar());
+        }
     }
 
     public void addArticleToExistingList(String name_of_list) {
@@ -177,13 +189,16 @@ abstract public class ArticlePageObject extends MainPageObject {
 
     }
 
-    public void addArticlesToMySaved(){
-        this.waitForElementAndClick(
-                OPTIONS_ADD_TO_MY_LIST_BUTTON,
-                "Can not find and click 'Add to saved' button",
-                5
-        );
-    }
+    public void addArticlesToMySaved() {
+        if (Platform.getInstance().isMW()) {
+            removeArticleFromSavedIfItAdded();
+        }
+            this.waitForElementAndClick(
+                    OPTIONS_ADD_TO_MY_LIST_BUTTON,
+                    "Can not find and click 'Add to saved' button",
+                    5
+            );
+        }
 
     public void clickContentsOption (){
         this.waitForElementAndClick(
@@ -199,5 +214,17 @@ abstract public class ArticlePageObject extends MainPageObject {
                 "Can not find and click CLose Contents button",
                 5
         );
+    }
+
+    public void removeArticleFromSavedIfItAdded(){
+        if(this.isElementPresent(OPTIONS_REMOVE_FROM_MYLISTS_BUTTON)){
+            this.waitForElementAndClick(OPTIONS_REMOVE_FROM_MYLISTS_BUTTON, "Can not find and click button to remove article from saved", 1);
+            this.waitForElementPresent(OPTIONS_ADD_TO_MY_LIST_BUTTON, "Can not find button to add article to MyLists after removing it from this list before", 1);
+        }
+    }
+
+    public String waitForContentOfArticle() {
+        WebElement element= this.waitForElementPresent(FIRST_WORD_AT_TITLE, "Can not find first word of ", 10);
+        return element.getText();
     }
 }
